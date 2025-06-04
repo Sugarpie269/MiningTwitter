@@ -3,21 +3,23 @@ from tweepy import OAuthHandler
 import boto3
 from botocore.exceptions import ClientError
 import json
+import os
 
 def get_secret():
-    secret_name = "MyApp/MiningTwitter"
-    region_name = "us-east-2"
+    aws_secret = os.getenv("AWS_SECRET_NAME")
+    aws_region = os.getenv("AWS_REGION")
+    aws_profile = os.getenv("AWS_PROFILE")
 
     # Create a Secrets Manager client
-    session = boto3.session.Session(profile_name="myprofile")
+    session = boto3.session.Session(profile_name=aws_profile)
     client = session.client(
         service_name='secretsmanager',
-        region_name=region_name
+        region_name=aws_region
     )
 
     try:
         get_secret_value_response = client.get_secret_value(
-            SecretId=secret_name
+            SecretId=aws_secret
         )
     except ClientError as e:
         # For a list of exceptions thrown, see
